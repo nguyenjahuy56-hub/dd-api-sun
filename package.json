@@ -1,0 +1,15 @@
+{
+  "name": "ddpro-api",
+  "version": "1.0.0",
+  "description": "API WebSocket Data",
+  "main": "ddpro.js",
+  "scripts": {
+    "start": "node ddpro.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "network": "^0.7.0",
+    "ws": "^8.17.1"
+  }
+}
