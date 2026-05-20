@@ -29,10 +29,10 @@ let currentAIPrediction = {
 };
 
 let currentSessionId = null;
-const patternHistory = [];
+const patternHistory = []; // Mảng lưu trữ tối đa 500 phiên gần nhất
 
 // ĐÃ CẬP NHẬT: WEBSOCKET_URL với wsToken mới
-const WEBSOCKET_URL = "wss://websocket.azhkthg1.net/websocket?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnZW5kZXIiOjAsImNhblZpZXdTdGF0IjpmYWxzZSwiZGlzcGxheU5hbWUiOiJzb25ndmVkZW0yMCIsImJvdCI6MCwiaXNNZXJjaGFudCI6ZmFsc2UsInZlcmlmaWVkQmFua0FjY291bnQiOnRydWUsInBsYXlFdmVudExvYmJ5IjpmYWxzZSwiY3VzdG9tZXJJZCI6MjM5OTUzMjE1LCJhZmZJZCI6ImRlZmF1bHQiLCJiYW5uZWQiOmZhbHNlLCJicmFuZCI6InN1bi53aW4iLCJlbWFpbCI6IiIsInRpbWVzdGFtcCI6MTc3ODY0Njg4OTI1NCwibG9ja0dhbWVzIjpbXSwiYW1vdW50IjowLCJsb2NrQ2hhdCI6ZmFsc2UsInBob25lVmVyaWZpZWQiOnRydWUsImlwQWRkcmVzcyI6IjExMy4xNzUuMTAwLjU3IiwibXV0ZSI6ZmFsc2UsImF2YXRhciI6Imh0dHBzOi8vaW1hZ2VzLnN3aW5zaG9wLm5ldC9pbWFnZXMvYXZhdGFyL2F2YXRhcl8xMC5wbmciLCJwbGF0Zm9ybUlkIjoyLCJ1c2VySWQiOiIwMDM3NDA2OC04YmZiLTQ5NTYtOWIxMi0yODkzYzMxMDcxNjAiLCJlbWFpbFZlcmlmaWVkIjpudWxsLCJyZWdUaW1lIjoxNzQ1NTkyNjU1ODA3LCJwaG9uZSI6Ijg0MzI5Njg5OTcxIiwiZGVwb3NpdCI6dHJ1ZSwidXNlcm5hbWUiOiJTQ19zb25ndmVkZW0xMCJ9.LqIpeiUbstS2mxhlR9G1dYuBpF2PICyw_TiNgJSHfjI";
+const WEBSOCKET_URL = "wss://websocket.azhkthg1.net/websocket?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnZW5kZXIiOjAsImNhblZpZXdTdGF0IjpmYWxzZSwiZGlzcGxheU5hbWUiOiJzb25ndmVkZW0yMCIsImJvdCI6MCwiaXNNZXJjaGFudCI6ZmFsc2UsInZlcmlmaWVkQmFua0FjY291bnQiOmZhbHNlLCJwbGF5RXZlbnRMb2JieSI6ZmFsc2UsImN1c3RvbWVySWQiOjIzOTk1MzIxNSwiYWZmSWQiOiJkZWZhdWx0IiwiYmFubmVkIjpmYWxzZSwiYnJhbmQiOiJzdW4ud2luIiwiZW1haWwiOiIiLCJ0aW1lc3RhbXAiOjE3NzkyOTA5MzY0OTIsImxvY2tHYW1lcyI6W10sImFtb3VudCI6MCwibG9ja0NoYXQiOmZhbHNlLCJwaG9uZVZlcmlmaWVkIjp0cnVlLCJpcEFkZHJlc3MiOiIyMDAxOmVlMDo0MzE1OmQxODA6YmNmOTpjNDo2Yjk4OmMyZmUiLCJtdXRlIjpmYWxzZSwiYXZhdGFyIjoiaHR0cHM6Ly9pbWFnZXMuc3dpbnNob3AubmV0L2ltYWdlcy9hdmF0YXIvYXZhdGFyXzEwLnBuZyIsInBsYXRmb3JtSWQiOjIsInVzZXJJZCI6IjAwMzc0MDY4LThiZmItNDk1Ni05YjEyLTI4OTNjMzEwNzE2MCIsImVtYWlsVmVyaWZpZWQiOm51bGwsInJlZ1RpbWUiOjE3NDU1OTI2NTU4MDcsInBob25lIjoiODQzMjk2ODk5NzEiLCJkZXBvc2l0Ijp0cnVlLCJ1c2VybmFtZSI6IlNDX3Nvbmd2ZWRlbTEwIn0.3DrTKiNZ5WQC-4ZLIZaFuazwlLm0A-LJnfak3rqbNcw";
 const WS_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
     "Origin": "https://play.sun.win"
@@ -48,8 +48,8 @@ const initialMessages = [
         "SC_songvedem10",
         "Songvedem10",
         {
-            "info": "{\"ipAddress\":\"113.175.100.57\",\"wsToken\":\".eyJnZW5kZXIiOjAsImNhblZpZXdTdGF0IjpmYWxzZSwiZGlzcGxheU5hbWUiOiJzb25ndmVkZW0yMCIsImJvdCI6MCwiaXNNZXJjaGFudCI6ZmFsc2UsInZlcmlmaWVkQmFua0FjY291bnQiOnRydWUsInBsYXlFdmVudExvYmJ5IjpmYWxzZSwiY3VzdG9tZXJJZCI6MjM5OTUzMjE1LCJhZmZJZCI6ImRlZmF1bHQiLCJiYW5uZWQiOmZhbHNlLCJicmFuZCI6InN1bi53aW4iLCJlbWFpbCI6IiIsInRpbWVzdGFtcCI6MTc3ODY0Njg4OTI1NCwibG9ja0dhbWVzIjpbXSwiYW1vdW50IjowLCJsb2NrQ2hhdCI6ZmFsc2UsInBob25lVmVyaWZpZWQiOnRydWUsImlwQWRkcmVzcyI6IjExMy4xNzUuMTAwLjU3IiwibXV0ZSI6ZmFsc2UsImF2YXRhciI6Imh0dHBzOi8vaW1hZ2VzLnN3aW5zaG9wLm5ldC9pbWFnZXMvYXZhdGFyL2F2YXRhcl8xMC5wbmciLCJwbGF0Zm9ybUlkIjoyLCJ1c2VySWQiOiIwMDM3NDA2OC04YmZiLTQ5NTYtOWIxMi0yODkzYzMxMDcxNjAiLCJlbWFpbFZlcmlmaWVkIjpudWxsLCJyZWdUaW1lIjoxNzQ1NTkyNjU1ODA3LCJwaG9uZSI6Ijg0MzI5Njg5OTcxIiwiZGVwb3NpdCI6dHJ1ZSwidXNlcm5hbWUiOiJTQ19zb25ndmVkZW0xMCJ9.LqIpeiUbstS2mxhlR9G1dYuBpF2PICyw_TiNgJSHfjI\",\"locale\":\"vi\",\"userId\":\"00374068-8bfb-4956-9b12-2893c3107160\",\"username\":\"SC_songvedem10\",\"timestamp\":1778646889261,\"refreshToken\":\"a48b8445b47545e8bf55b5ebcdd303c5.fd44c0a6c99b455c84c845298d835679\"}",
-            "signature": "7B3E87957099909DA6169542E3452C415E66032003B623160E7BC7E056F6904D27BC6AAE3E2A10EDBB377D76A1AD89E6B907505F7E4FF9C63C79B591310E0B37A27E70CDDB00CA46E953CBBEAB716C9A253FDC9521CFEDEAE0C6B31B7BDE86561C433429C048F6984FE1F128CB49EBF6BE7728E32C49505E8077609C857B8C82"
+            "info": "{\"ipAddress\":\"2001:ee0:4315:d180:bcf9:c4:6b98:c2fe\",\"wsToken\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnZW5kZXIiOjAsImNhblZpZXdTdGF0IjpmYWxzZSwiZGlzcGxheU5hbWUiOiJzb25ndmVkZW0yMCIsImJvdCI6MCwiaXNNZXJjaGFudCI6ZmFsc2UsInZlcmlmaWVkQmFua0FjY291bnQiOmZhbHNlLCJwbGF5RXZlbnRMb2JieSI6ZmFsc2UsImN1c3RvbWVySWQiOjIzOTk1MzIxNSwiYWZmSWQiOiJkZWZhdWx0IiwiYmFubmVkIjpmYWxzZSwiYnJhbmQiOiJzdW4ud2luIiwiZW1haWwiOiIiLCJ0aW1lc3RhbXAiOjE3NzkyOTA5MzY0OTIsImxvY2tHYW1lcyI6W10sImFtb3VudCI6MCwibG9ja0NoYXQiOmZhbHNlLCJwaG9uZVZlcmlmaWVkIjp0cnVlLCJpcEFkZHJlc3MiOiIyMDAxOmVlMDo0MzE1OmQxODA6YmNmOTpjNDo2Yjk4OmMyZmUiLCJtdXRlIjpmYWxzZSwiYXZhdGFyIjoiaHR0cHM6Ly9pbWFnZXMuc3dpbnNob3AubmV0L2ltYWdlcy9hdmF0YXIvYXZhdGFyXzEwLnBuZyIsInBsYXRmb3JtSWQiOjIsInVzZXJJZCI6IjAwMzc0MDY4LThiZmItNDk1Ni05YjEyLTI4OTNjMzEwNzE2MCIsImVtYWlsVmVyaWZpZWQiOm51bGwsInJlZ1RpbWUiOjE3NDU1OTI2NTU4MDcsInBob25lIjoiODQzMjk2ODk5NzEiLCJkZXBvc2l0Ijp0cnVlLCJ1c2VybmFtZSI6IlNDX3Nvbmd2ZWRlbTEwIn0.3DrTKiNZ5WQC-4ZLIZaFuazwlLm0A-LJnfak3rqbNcw\",\"locale\":\"vi\",\"userId\":\"00374068-8bfb-4956-9b12-2893c3107160\",\"username\":\"SC_songvedem10\",\"timestamp\":1779290936506,\"refreshToken\":\"0b0056ad2ec74484a9562b98116ddde8.31411eb269f741cd9d2fcc3d4978e12a\"}",
+            "signature": "2D97277D94FC33506F347B491433C077BFCF0BB54D0C01F4A47209148B0420EF1162E29DE4CEF4D4C550D6E283F0CA2FB037F93ECA007573FA7DF21A16E6295F3134F7BF427F99B8A6E6A6AAEC11FF83C7F9AC8B205A8892D9BDC655E1B70B0256DAA6ED7B329008DBE0E8B585C3A15143D4B6999F02D3FC1795739264F9AD5B"
         }
     ],
     [6, "MiniGame", "taixiuPlugin", { cmd: 1005 }],
@@ -113,6 +113,7 @@ function connectWebSocket() {
                 const total = d1 + d2 + d3;
                 const result = (total > 10) ? "Tài" : "Xỉu";
 
+                // Cập nhật thông tin phiên hiện tại
                 apiResponseData = {
                     "Phien": currentSessionId,
                     "Xuc_xac_1": d1,
@@ -127,15 +128,20 @@ function connectWebSocket() {
                 
                 console.log(`[🎲] Phiên ${apiResponseData.Phien}: ${d1}-${d2}-${d3} = ${total} (${result})`);
                 
-                patternHistory.push({
-                    session: currentSessionId,
-                    dice: [d1, d2, d3],
-                    total: total,
-                    result: result,
-                    timestamp: new Date().toISOString()
+                // ĐÃ CẬP NHẬT: Dùng unshift để thêm phiên mới lên đầu mảng (Index 0 = Mới nhất)
+                patternHistory.unshift({
+                    "Phien": currentSessionId,
+                    "Xuc_xac_1": d1,
+                    "Xuc_xac_2": d2,
+                    "Xuc_xac_3": d3,
+                    "Tong": total,
+                    "Ket_qua": result,
+                    "timestamp": new Date().toISOString()
                 });
                 
-                if (patternHistory.length > 100) patternHistory.shift();
+                // Giới hạn max 500 phiên (Xóa phần tử cuối cùng nếu mảng vượt 500)
+                if (patternHistory.length > 500) patternHistory.pop();
+                
                 currentSessionId = null;
             }
         } catch (e) {
@@ -166,10 +172,11 @@ app.post('/api/update-prediction', (req, res) => {
     res.json({ success: true });
 });
 
-// Trả về Data + Dự đoán AI cho Giao diện HTML
+// Trả về Data + Lịch sử 500 phiên (Từ mới đến cũ) + Dự đoán AI cho Giao diện HTML / Ứng dụng khác
 app.get('/api/ddvipro', (req, res) => {
     res.json({
         ...apiResponseData,
+        history: patternHistory,  // <-- Đã thêm mảng 500 phiên
         ai_prediction: currentAIPrediction
     });
 });
@@ -177,14 +184,14 @@ app.get('/api/ddvipro', (req, res) => {
 app.get('/api/history', (req, res) => {
     res.json({
         current: apiResponseData,
-        history: patternHistory.slice(-20),
+        history: patternHistory, // Lấy toàn bộ mảng lịch sử (tối đa 500)
         total_requests: apiResponseData.update_count || 0
     });
 });
 
 app.get('/api/stats', (req, res) => {
-    const taiCount = patternHistory.filter(item => item.result === "Tài").length;
-    const xiuCount = patternHistory.filter(item => item.result === "Xỉu").length;
+    const taiCount = patternHistory.filter(item => item.Ket_qua === "Tài").length;
+    const xiuCount = patternHistory.filter(item => item.Ket_qua === "Xỉu").length;
     res.json({
         total_sessions: patternHistory.length,
         tai_count: taiCount,
@@ -242,8 +249,8 @@ app.get('/', (req, res) => {
                 <div class="data-box">
                     <h2>📊 API Endpoints</h2>
                     <ul>
-                        <li><a href="/api/ddvipro" style="color:#00ffff;">/api/ddvipro</a> - Latest result & AI</li>
-                        <li><a href="/api/history" style="color:#00ffff;">/api/history</a> - Last 20 results</li>
+                        <li><a href="/api/ddvipro" style="color:#00ffff;">/api/ddvipro</a> - Latest result, 500 history & AI</li>
+                        <li><a href="/api/history" style="color:#00ffff;">/api/history</a> - Full history endpoint</li>
                     </ul>
                 </div>
             </div>
@@ -270,7 +277,7 @@ app.get('/', (req, res) => {
 app.listen(PORT, '0.0.0.0', () => {
     const networkInfo = getNetworkInfo();
     console.log(`\n=========================================`);
-    console.log(`🚀 api sunwin dd`);
+    console.log(`🚀 API SUNWIN DD - RUNNING`);
     console.log(`=========================================`);
     console.log(`   API MỚI: http://localhost:${PORT}/api/ddvipro`);
     console.log(`=========================================\n`);
